@@ -4,4 +4,8 @@ A Flutter project to list meals and view descriptions and steps to prepare them 
 
 ## Getting Started
 
-this proyect use a normal configuration base this version only add google_fonts package as a dependency 
+### this proyect use a normal configuration base this version only add 
+google_fonts package 
+riverpod state management
+
+as a dependencies
