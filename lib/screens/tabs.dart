@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mealsnav/models/meal.dart';
 import 'package:mealsnav/provider/favorites_provider.dart';
-import 'package:mealsnav/provider/meals_providers.dart';
+import 'package:mealsnav/provider/filters_provider.dart';
 import 'package:mealsnav/screens/categories.dart';
 import 'package:mealsnav/screens/filters.dart';
 import 'package:mealsnav/screens/meals.dart';
@@ -25,7 +24,6 @@ class TabsScreen extends ConsumerStatefulWidget {
 
 class _TabsScreenState extends ConsumerState<TabsScreen> {
   int _selectedPageIndex = 0;
-  Map<FilterOptions, bool> _filters = kInitialFilters;
 
   void selectPage(int index) {
     setState(() {
@@ -36,34 +34,14 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   void _setScreen(String identifier) async {
     Navigator.of(context).pop();
     if (identifier == 'filters') {
-      final result = await Navigator.of(context).push<Map<FilterOptions, bool>>(
-          MaterialPageRoute(
-              builder: (ctx) => FiltersScreen(currentFilters: _filters)));
-
-      setState(() {
-        _filters = result ?? kInitialFilters;
-      });
+      await Navigator.of(context).push<Map<FilterOptions, bool>>(
+          MaterialPageRoute(builder: (ctx) => const FiltersScreen()));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final mealsRead = ref.watch(mealsProvider);
-    final aviablemeals = mealsRead.where((meal) {
-      if (_filters[FilterOptions.gluttenFree]! && !meal.isGlutenFree) {
-        return false;
-      }
-      if (_filters[FilterOptions.lactoseFree]! && !meal.isLactoseFree) {
-        return false;
-      }
-      if (_filters[FilterOptions.vegan]! && !meal.isVegan) {
-        return false;
-      }
-      if (_filters[FilterOptions.vegetarian]! && !meal.isVegetarian) {
-        return false;
-      }
-      return true;
-    }).toList();
+    final aviablemeals = ref.watch(filteredMealsProvider);
 
     Widget activePage = CategoriesScreen(aviableMeals: aviablemeals);
     var activePagetitle = 'Categories';
